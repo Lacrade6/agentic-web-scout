@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Open API Scout — an open agentic website that helps people and AI agents discover free public APIs, call them live from the browser, and verify the answers. Bring your own LLM key; the host pays for no inference.">
+    <title>Open API Scout — Agent-Ready Public Data Workbench</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Open API Scout",
+      "applicationCategory": "DeveloperApplication",
+      "description": "An open agentic website publishing a portable multi-agent network (agent-manifest.json + open_api_scout.network.json) that discovers free public APIs, calls them live from the visitor's browser, and verifies claims against fetched data.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#">Open API <span>Scout</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#agents">Agents</a>
+        <a href="#directory">API Directory</a>
+        <a href="#for-agents">For Agents</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-heading">
+        <p class="eyebrow">An open agentic website · MVP Profile 0.3</p>
+        <h1 id="hero-heading">Free public data,<br>ready for any agent.</h1>
+        <p class="lede">Open API Scout publishes a portable agent network that finds the right free public API for your goal, calls it live from <em>your</em> browser, and checks every claim against the data that actually came back. You bring the LLM key; this site pays for no inference and never sees your key.</p>
+        <p id="network-status" class="status" role="status">Loading agent network…</p>
+        <div class="hero-links">
+          <a href="agent-manifest.json">agent-manifest.json</a>
+          <a href="open_api_scout.network.json">open_api_scout.network.json</a>
+          <a href="api-directory.json">api-directory.json</a>
+          <a href="llms.txt">llms.txt</a>
+        </div>
+      </section>
+
+      <section id="agents" class="panel" aria-labelledby="agents-heading">
+        <h2 id="agents-heading">Ask the agents</h2>
+        <p>Four agents run entirely in this tab: a <strong>coordinator</strong> delegates to an <strong>API curator</strong> (grounded in the directory below), a <strong>live-data analyst</strong> (calls allowlisted APIs after your approval), and a <strong>verifier</strong> (checks claims against fetched evidence). Every external fetch shows you the destination first.</p>
+        <div id="sample-queries" class="chips" aria-label="Sample questions"></div>
+
+        <details class="settings" open>
+          <summary>⚙ AI model settings (bring your own key)</summary>
+          <div class="settings-grid">
+            <label>Provider
+              <select id="provider-select"></select>
+            </label>
+            <label>Provider URL (OpenAI-compatible base)
+              <input id="base-url" type="url" placeholder="https://api.otari.ai/api/v1" autocomplete="off">
+            </label>
+            <label>Model
+              <input id="model-name" type="text" placeholder="alibaba/qwen3.8-flash" autocomplete="off">
+            </label>
+            <label>API key (stored only in this browser)
+              <input id="api-key" type="password" placeholder="Paste your key" autocomplete="off">
+            </label>
+          </div>
+          <div class="settings-actions">
+            <button id="settings-save" class="btn" type="button">Save and start</button>
+            <button id="settings-test" class="btn btn-ghost" type="button">Test connection</button>
+            <button id="settings-delete" class="btn btn-ghost" type="button">Delete saved profile</button>
+          </div>
+          <p id="key-status" class="status" role="status"></p>
+          <p id="test-status" class="status" role="status"></p>
+          <p class="fineprint">Your key is sent only to the router above, never to this site, never to peer sites, and never written into the published network files. Use a key with a spending limit. No key? The chat still answers with offline directory search, and every API card below can be tried live.</p>
+        </details>
+
+        <div id="consent-card" class="consent" hidden role="alertdialog" aria-labelledby="consent-title" aria-describedby="consent-body">
+          <h3 id="consent-title">External request</h3>
+          <p id="consent-body"></p>
+          <div class="settings-actions">
+            <button id="consent-allow" class="btn" type="button">Allow this request</button>
+            <button id="consent-deny" class="btn btn-ghost" type="button">Decline</button>
+          </div>
+        </div>
+
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+        <form id="chat-form" class="chat-form">
+          <label class="visually-hidden" for="chat-input">Ask the agents</label>
+          <input id="chat-input" type="text" placeholder="e.g. What is the weather in Jakarta right now, and which API did you use?" autocomplete="off">
+          <button id="chat-send" class="btn" type="submit">Send</button>
+        </form>
+
+        <details class="activity">
+          <summary>Agent activity log</summary>
+          <ul id="activity-log" class="activity-log"></ul>
+        </details>
+      </section>
+
+      <section id="directory" class="panel" aria-labelledby="directory-heading">
+        <h2 id="directory-heading">API directory</h2>
+        <p>The same machine-readable directory the curator agent searches: <a href="api-directory.json">api-directory.json</a>. Every entry is free, needs no key, allows browser calls (CORS), and can be tried live right now.</p>
+        <div class="directory-tools">
+          <label class="visually-hidden" for="directory-filter">Filter APIs</label>
+          <input id="directory-filter" type="search" placeholder="Filter by name, category, or keyword…">
+          <span id="directory-count" class="status"></span>
+        </div>
+        <div id="directory-grid" class="directory-grid"></div>
+        <h3>Live call output</h3>
+        <pre id="live-output" class="live-output">Pick “Try it live” on any card. You will approve the destination before anything is sent.</pre>
+      </section>
+
+      <section id="for-agents" class="panel" aria-labelledby="for-agents-heading">
+        <h2 id="for-agents-heading">For agents &amp; other agentic websites</h2>
+        <p>This site is itself callable. A conforming browser runtime on another origin can fetch <a href="agent-manifest.json">agent-manifest.json</a>, resolve the <code>open_api_scout</code> network, and run it locally on the caller's own key. The published definition is data-only — no code, no credentials, no server. See <a href="llms.txt">llms.txt</a> for a plain-text map, and <a href=".well-known/agent-card.json">.well-known/agent-card.json</a> for a discovery card.</p>
+        <p>Site actions exposed to the network (and via WebMCP where supported): <code>website_search_directory</code>, <code>website_get_api_details</code>, <code>website_call_public_api</code> (allowlisted GET only, visitor-approved), <code>website_analyze_json</code>. A public MCP facade is honestly marked unavailable in <a href="agent-mcp.json">agent-mcp.json</a> because static hosting provides no server.</p>
+        <form id="peer-form" class="peer-form">
+          <h3>Try calling a peer network</h3>
+          <p>Paste another agentic site's network URL (site base + network name). It runs here, in your browser, on your key — after your approval.</p>
+          <label>Peer network URL
+            <input id="peer-url" type="url" placeholder="https://peer.example/their_network">
+          </label>
+          <label>Question for the peer
+            <input id="peer-inquiry" type="text" placeholder="What can this agent network do?">
+          </label>
+          <button class="btn" type="submit">Load &amp; ask peer</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>Built for the <a href="https://cognizant-agenticweb.devpost.com/">Open Agentic Web Challenge</a>. Static files only — host anywhere with HTTPS. Public API data belongs to its providers; check each provider's terms before building on it.</p>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

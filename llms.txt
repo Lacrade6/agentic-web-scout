@@ -1,0 +1,29 @@
+# Open API Scout
+
+> An open agentic website that helps people and AI agents discover free public APIs, call them live from the visitor's browser, and verify claims against the fetched data. Built for the Open Agentic Web Challenge (MVP Profile 0.3).
+
+## Agent network (machine-readable)
+
+- Manifest: /agent-manifest.json
+- Network definition: /open_api_scout.network.json (network name: open_api_scout, front agent: scout_coordinator)
+- API directory (grounding data): /api-directory.json
+- Peer link map: /links.json
+- MCP facade status: /agent-mcp.json (unavailable on static hosting; load the network definition directly)
+
+## What the agents do
+
+- scout_coordinator: understands the goal and delegates.
+- api_curator: recommends free no-key APIs from the published directory only.
+- live_data_analyst: calls allowlisted public APIs (GET, visitor-approved) and summarizes what came back.
+- verifier: checks draft claims against fetched evidence.
+
+## Site actions
+
+- website_search_directory(query, category?, limit?)
+- website_get_api_details(id)
+- website_call_public_api(id, params?) — allowlisted GET only; the visitor approves the destination first
+- website_analyze_json(data, numericField?, groupField?)
+
+## Inference
+
+Bring your own key. The visitor selects any OpenAI-compatible router (Otari, OpenAI, OpenRouter, Anthropic, Ollama, or custom). Keys stay in the visitor's browser and are sent only to the selected router. Without a key, the site still offers offline directory search and live "try it" calls.

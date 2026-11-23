@@ -1,0 +1,1 @@
+{"available":false,"front_man":"scout_coordinator","network":"open_api_scout","protocol":"nsdeploy-agent-mcp/v1","reason":"This is a static bundle; a public MCP facade requires an application host. Any conforming browser runtime can load open_api_scout.network.json directly via agent-manifest.json."}
